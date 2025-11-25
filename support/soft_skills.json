@@ -1,0 +1,157 @@
+{
+    "communication": [
+        "communication",
+        "effective communication",
+        "verbal communication",
+        "written communication",
+        "presentation skills",
+        "active listening",
+        "storytelling"
+    ],
+    "teamwork": [
+        "teamwork",
+        "collaboration",
+        "cross-functional collaboration",
+        "working in teams",
+        "team player",
+        "peer cooperation",
+        "co-creation"
+    ],
+    "leadership": [
+        "leadership",
+        "team leadership",
+        "people leadership",
+        "servant leadership",
+        "mentoring",
+        "coaching",
+        "decision-making",
+        "delegation",
+        "conflict mediation"
+    ],
+    "problem_solving": [
+        "problem solving",
+        "critical thinking",
+        "analytical thinking",
+        "root cause analysis",
+        "issue resolution",
+        "strategic thinking",
+        "troubleshooting"
+    ],
+    "adaptability": [
+        "adaptability",
+        "flexibility",
+        "resilience",
+        "stress tolerance",
+        "learning agility",
+        "openness to change",
+        "handling uncertainty"
+    ],
+    "creativity": [
+        "creativity",
+        "innovation",
+        "creative thinking",
+        "ideation",
+        "brainstorming",
+        "design thinking",
+        "product thinking"
+    ],
+    "time_management": [
+        "time management",
+        "prioritization",
+        "task management",
+        "organization",
+        "planning",
+        "workload management",
+        "multitasking"
+    ],
+    "emotional_intelligence": [
+        "emotional intelligence",
+        "empathy",
+        "self-awareness",
+        "self-regulation",
+        "relationship management",
+        "interpersonal skills",
+        "sensitivity"
+    ],
+    "negotiation": [
+        "negotiation",
+        "persuasion",
+        "influence",
+        "stakeholder management",
+        "assertiveness",
+        "diplomacy"
+    ],
+    "customer_focus": [
+        "customer focus",
+        "customer obsession",
+        "client communication",
+        "customer-centric mindset",
+        "client relationship management"
+    ],
+    "conflict_management": [
+        "conflict resolution",
+        "conflict management",
+        "mediation",
+        "facilitation",
+        "consensus building"
+    ],
+    "attention_to_detail": [
+        "attention to detail",
+        "detail-oriented",
+        "accuracy",
+        "quality focus",
+        "precision",
+        "rigor"
+    ],
+    "accountability": [
+        "accountability",
+        "ownership",
+        "responsibility",
+        "professionalism",
+        "work ethic",
+        "reliability"
+    ],
+    "work_style": [
+        "proactivity",
+        "initiative",
+        "self-motivation",
+        "independence",
+        "autonomy",
+        "entrepreneurial mindset"
+    ],
+    "cultural_fit": [
+        "collaborative",
+        "inclusive mindset",
+        "diversity awareness",
+        "ethical behavior",
+        "integrity",
+        "company culture alignment"
+    ],
+    "learning": [
+        "quick learner",
+        "continuous learning",
+        "curiosity",
+        "research",
+        "self-development"
+    ],
+    "presentation": [
+        "presentation",
+        "public speaking",
+        "pitching",
+        "meeting facilitation",
+        "demonstration skills"
+    ],
+    "management": [
+        "project coordination",
+        "project management",
+        "task delegation",
+        "resource management",
+        "stakeholder alignment"
+    ],
+    "others_general": [
+        "soft skills",
+        "interpersonal abilities",
+        "team skills",
+        "professional skills"
+    ]
+}
