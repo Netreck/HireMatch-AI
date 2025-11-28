@@ -8,9 +8,17 @@ const Index = () => {
   const [step, setStep] = useState<"upload" | "matching" | "feedback">("upload");
   const [resume, setResume] = useState("");
   const [selectedJob, setSelectedJob] = useState<any>(null);
+  type AnalysisData = {
+    pontos_fortes: string[];
+    pontos_a_melhorar: string[];
+    sugestoes: string[];
+  };
+  const [analysisData, setAnalysisData] = useState<AnalysisData | null>(null);
 
   const handleResumeSubmit = (resumeText: string) => {
     setResume(resumeText);
+    setAnalysisData(null);
+    setSelectedJob(null);
     setStep("matching");
   };
 
@@ -19,9 +27,19 @@ const Index = () => {
     setStep("feedback");
   };
 
+  const handleAnalysisComplete = (job: any, analysis: any) => {
+    setSelectedJob(job);
+    setAnalysisData(analysis);
+    setStep("feedback");
+  };
+
   const handleAdaptResume = () => {
     // In production, this would trigger the adaptation process
     console.log("Adapting resume for job:", selectedJob);
+  };
+
+  const handleBackToMatching = () => {
+    setStep("matching");
   };
 
   const resetFlow = () => {
@@ -121,17 +139,26 @@ const Index = () => {
           </div>
 
           {/* Content */}
-          <div className="max-w-4xl mx-auto">
+          <div className="max-w-4xl mx-auto space-y-6">
             {step === "upload" && (
               <ResumeUpload onResumeSubmit={handleResumeSubmit} />
             )}
-            {step === "matching" && (
-              <JobMatching resume={resume} onJobSelect={handleJobSelect} />
-            )}
+            <div className={step === "matching" ? "" : "hidden"}>
+              <JobMatching
+                resume={resume}
+                onJobSelect={handleJobSelect}
+                onAnalysisComplete={handleAnalysisComplete}
+              />
+            </div>
             {step === "feedback" && (
               <FeedbackDisplay
                 jobTitle={selectedJob?.title}
+                companyName={selectedJob?.company}
+                companyLogo={selectedJob?.companyLogo}
+                jobUrl={selectedJob?.url}
                 onAdaptResume={handleAdaptResume}
+                onBackToMatching={handleBackToMatching}
+                data={analysisData}
               />
             )}
           </div>

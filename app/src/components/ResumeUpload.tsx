@@ -4,44 +4,89 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { Upload, FileText, Sparkles } from "lucide-react";
 import { toast } from "sonner";
+import { GlobalWorkerOptions, getDocument } from "pdfjs-dist";
+import pdfjsWorker from "pdfjs-dist/build/pdf.worker.min.mjs?url";
 
 interface ResumeUploadProps {
   onResumeSubmit: (resume: string) => void;
 }
 
 export const ResumeUpload = ({ onResumeSubmit }: ResumeUploadProps) => {
-  const [resumeText, setResumeText] = useState("");
+  const [curriculoTexto, setCurriculoTexto] = useState("");
   const [isDragging, setIsDragging] = useState(false);
+  const [isParsing, setIsParsing] = useState(false);
 
-  const handleFileUpload = (file: File) => {
-    if (file.type === "application/pdf" || file.type === "text/plain" || 
-        file.type === "application/msword" || 
-        file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") {
+  const ensurePdfWorker = () => {
+    if (!GlobalWorkerOptions.workerSrc) {
+      GlobalWorkerOptions.workerSrc = pdfjsWorker;
+    }
+  };
+
+  const extractTextFromPdf = async (file: File) => {
+    ensurePdfWorker();
+    const buffer = await file.arrayBuffer();
+    const pdf = await getDocument({ data: buffer }).promise;
+    let text = "";
+
+    for (let pageNum = 1; pageNum <= pdf.numPages; pageNum += 1) {
+      const page = await pdf.getPage(pageNum);
+      const content = await page.getTextContent();
+      const strings = content.items
+        .map((item: any) => ("str" in item ? item.str : ""))
+        .join(" ");
+      text += strings + "\n";
+    }
+
+    return text.trim();
+  };
+
+  const handleFileUpload = async (file: File) => {
+    if (file.type === "application/pdf") {
+      try {
+        setIsParsing(true);
+        const text = await extractTextFromPdf(file);
+        setCurriculoTexto(text);
+        toast.success("PDF convertido para texto com sucesso!");
+      } catch (error) {
+        console.error(error);
+        toast.error("Não foi possível ler o PDF");
+      } finally {
+        setIsParsing(false);
+      }
+      return;
+    }
+
+    if (
+      file.type === "text/plain" ||
+      file.type === "application/msword" ||
+      file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    ) {
       const reader = new FileReader();
       reader.onload = (e) => {
         const text = e.target?.result as string;
-        setResumeText(text);
+        setCurriculoTexto(text);
         toast.success("Currículo carregado com sucesso!");
       };
       reader.readAsText(file);
-    } else {
-      toast.error("Por favor, envie um arquivo PDF, DOC ou TXT");
+      return;
     }
+
+    toast.error("Por favor, envie um arquivo PDF, DOC ou TXT");
   };
 
-  const handleDrop = (e: React.DragEvent) => {
+  const handleDrop = async (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
     const file = e.dataTransfer.files[0];
-    if (file) handleFileUpload(file);
+    if (file) await handleFileUpload(file);
   };
 
   const handleSubmit = () => {
-    if (!resumeText.trim()) {
+    if (!curriculoTexto.trim()) {
       toast.error("Por favor, adicione seu currículo antes de continuar");
       return;
     }
-    onResumeSubmit(resumeText);
+    onResumeSubmit(curriculoTexto);
     toast.success("Analisando seu currículo...");
   };
 
@@ -63,7 +108,7 @@ export const ResumeUpload = ({ onResumeSubmit }: ResumeUploadProps) => {
             isDragging
               ? "border-primary bg-primary/5 scale-[1.02]"
               : "border-border hover:border-primary/50"
-          }`}
+          } ${isParsing ? "opacity-80 pointer-events-none" : ""}`}
           onDragOver={(e) => {
             e.preventDefault();
             setIsDragging(true);
@@ -71,7 +116,7 @@ export const ResumeUpload = ({ onResumeSubmit }: ResumeUploadProps) => {
           onDragLeave={() => setIsDragging(false)}
           onDrop={handleDrop}
         >
-          <div className="text-center space-y-4">
+        <div className="text-center space-y-4">
             <Upload className="w-12 h-12 mx-auto text-muted-foreground" />
             <div>
               <p className="text-sm font-medium mb-1">
@@ -84,9 +129,9 @@ export const ResumeUpload = ({ onResumeSubmit }: ResumeUploadProps) => {
             <input
               type="file"
               accept=".pdf,.doc,.docx,.txt"
-              onChange={(e) => {
+              onChange={async (e) => {
                 const file = e.target.files?.[0];
-                if (file) handleFileUpload(file);
+                if (file) await handleFileUpload(file);
               }}
               className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
             />
@@ -104,18 +149,19 @@ export const ResumeUpload = ({ onResumeSubmit }: ResumeUploadProps) => {
 
         <Textarea
           placeholder="Cole o texto do seu currículo aqui..."
-          value={resumeText}
-          onChange={(e) => setResumeText(e.target.value)}
+          value={curriculoTexto}
+          onChange={(e) => setCurriculoTexto(e.target.value)}
           className="min-h-[200px] resize-none"
         />
 
         <Button
           onClick={handleSubmit}
           size="lg"
-          className="w-full bg-gradient-to-r from-primary to-accent hover:opacity-90 shadow-[var(--shadow-button)] transition-all"
+          disabled={isParsing}
+          className="w-full bg-gradient-to-r from-primary to-accent hover:opacity-90 shadow-[var(--shadow-button)] transition-all disabled:opacity-70"
         >
           <Sparkles className="w-5 h-5 mr-2" />
-          Analisar Currículo
+          {isParsing ? "Lendo PDF..." : "Analisar Currículo"}
         </Button>
       </div>
     </Card>
