@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -17,9 +16,11 @@ interface FeedbackDisplayProps {
   companyName?: string;
   companyLogo?: string;
   jobUrl?: string;
-  onAdaptResume: () => void;
+  onAdaptResume: () => Promise<void> | void;
   onBackToMatching?: () => void;
   data?: FeedbackData;
+  isAdapting: boolean;
+  isAdapted: boolean;
 }
 
 export const FeedbackDisplay = ({
@@ -30,9 +31,9 @@ export const FeedbackDisplay = ({
   onAdaptResume,
   onBackToMatching,
   data,
+  isAdapting,
+  isAdapted,
 }: FeedbackDisplayProps) => {
-  const [isAdapting, setIsAdapting] = useState(false);
-
   const fallback: FeedbackData = {
     pontos_fortes: ["Sem dados no momento"],
     pontos_a_melhorar: ["Sem dados no momento"],
@@ -41,13 +42,12 @@ export const FeedbackDisplay = ({
 
   const feedback = data ?? fallback;
 
-  const handleAdapt = () => {
-    setIsAdapting(true);
-    setTimeout(() => {
-      setIsAdapting(false);
-      onAdaptResume();
-      toast.success("Currículo adaptado com sucesso!");
-    }, 2000);
+  const handleAdapt = async () => {
+    if (isAdapted) {
+      toast.info("Currículo já adaptado para esta vaga");
+      return;
+    }
+    await onAdaptResume();
   };
 
   const handleDownload = () => {
@@ -155,12 +155,17 @@ export const FeedbackDisplay = ({
         <div className="flex flex-col sm:flex-row gap-4">
           <Button
             onClick={handleAdapt}
-            disabled={isAdapting}
+            disabled={isAdapting || isAdapted}
             size="lg"
             className="flex-1 bg-gradient-to-r from-primary to-accent hover:opacity-90 shadow-[var(--shadow-button)]"
           >
             {isAdapting ? (
-              <>Adaptando...</>
+              <>Adaptando e baixando...</>
+            ) : isAdapted ? (
+              <>
+                <CheckCircle2 className="w-5 h-5 mr-2" />
+                Currículo adaptado
+              </>
             ) : (
               <>
                 <Wand2 className="w-5 h-5 mr-2" />

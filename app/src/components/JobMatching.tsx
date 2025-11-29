@@ -299,8 +299,19 @@ export const JobMatching = ({ resume, onJobSelect, onAnalysisComplete }: JobMatc
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1 space-y-3">
                     <div className="flex items-start gap-3">
-                      <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-                        <Briefcase className="w-6 h-6 text-primary-foreground" />
+                      <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center overflow-hidden">
+                        {job.companyLogo ? (
+                          <img
+                            src={job.companyLogo}
+                            alt={job.company || "Empresa"}
+                            className="w-full h-full object-contain bg-white p-1"
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).style.display = "none";
+                            }}
+                          />
+                        ) : (
+                          <Briefcase className="w-6 h-6 text-primary-foreground" />
+                        )}
                       </div>
                       <div className="flex-1">
                         <h4 className="font-bold text-lg">{job.title}</h4>
@@ -373,7 +384,19 @@ export const JobMatching = ({ resume, onJobSelect, onAnalysisComplete }: JobMatc
                 <div className="flex items-start justify-between gap-3">
                   <div className="space-y-1">
                     <h4 className="font-bold text-xl">{selectedJob.title}</h4>
-                    <p className="text-muted-foreground">{selectedJob.company}</p>
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      {selectedJob.companyLogo && (
+                        <img
+                          src={selectedJob.companyLogo}
+                          alt={selectedJob.company || "Empresa"}
+                          className="w-8 h-8 object-contain rounded bg-white p-0.5 border"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).style.display = "none";
+                          }}
+                        />
+                      )}
+                      <p>{selectedJob.company}</p>
+                    </div>
                     <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
                       {selectedJob.location && <span className="rounded-full bg-muted px-2 py-1">{selectedJob.location}</span>}
                       {selectedJob.jobType && <span className="rounded-full bg-muted px-2 py-1 capitalize">{selectedJob.jobType.replaceAll("_", " ")}</span>}

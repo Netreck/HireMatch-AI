@@ -1,10 +1,15 @@
 from fastapi import APIRouter
 from .services.matching import pipeline_matching
 from .services.analysis import comparar_curriculo_vaga
+from .services.adapt import gerar_curriculo_adaptado
 import asyncio
 from pydantic import BaseModel
 
 class RequestModel(BaseModel):
+    curriculo: str
+    vaga: str
+
+class AdaptRequestModel(BaseModel):
     curriculo: str
     vaga: str
 router = APIRouter()
@@ -20,4 +25,11 @@ def match(data: dict):
 async def match(data: RequestModel):
     loop = asyncio.get_event_loop()
     resultado = await loop.run_in_executor(None, comparar_curriculo_vaga, data.curriculo, data.vaga)
+    return resultado
+
+
+@router.post("/adapt")
+async def adapt(data: AdaptRequestModel):
+    loop = asyncio.get_event_loop()
+    resultado = await loop.run_in_executor(None, gerar_curriculo_adaptado, data.curriculo, data.vaga)
     return resultado
