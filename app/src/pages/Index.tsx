@@ -8,6 +8,7 @@ import { toast } from "sonner";
 const Index = () => {
   const [step, setStep] = useState<"upload" | "matching" | "feedback">("upload");
   const [resume, setResume] = useState("");
+  const [resumeVersion, setResumeVersion] = useState(0);
   const [selectedJob, setSelectedJob] = useState<any>(null);
   const [isAdapting, setIsAdapting] = useState(false);
   const [isAdapted, setIsAdapted] = useState(false);
@@ -20,6 +21,7 @@ const Index = () => {
 
   const handleResumeSubmit = (resumeText: string) => {
     setResume(resumeText);
+    setResumeVersion((v) => v + 1);
     setAnalysisData(null);
     setSelectedJob(null);
     setStep("matching");
@@ -128,6 +130,7 @@ const Index = () => {
   const resetFlow = () => {
     setStep("upload");
     setResume("");
+    setResumeVersion((v) => v + 1);
     setSelectedJob(null);
     setIsAdapted(false);
     setIsAdapting(false);
@@ -231,6 +234,7 @@ const Index = () => {
             <div className={step === "matching" ? "" : "hidden"}>
               <JobMatching
                 resume={resume}
+                resumeVersion={resumeVersion}
                 onJobSelect={handleJobSelect}
                 onAnalysisComplete={handleAnalysisComplete}
               />

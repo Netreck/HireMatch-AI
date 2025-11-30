@@ -30,11 +30,12 @@ interface FeedbackData {
 
 interface JobMatchingProps {
   resume: string;
+  resumeVersion: number;
   onJobSelect: (job: Job | null, customJob?: string) => void;
   onAnalysisComplete?: (job: Job, analysis: FeedbackData) => void;
 }
 
-export const JobMatching = ({ resume, onJobSelect, onAnalysisComplete }: JobMatchingProps) => {
+export const JobMatching = ({ resume, resumeVersion, onJobSelect, onAnalysisComplete }: JobMatchingProps) => {
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const [showCustomJob, setShowCustomJob] = useState(false);
   const [customJobDescription, setCustomJobDescription] = useState("");
@@ -45,14 +46,14 @@ export const JobMatching = ({ resume, onJobSelect, onAnalysisComplete }: JobMatc
   const mobileDetailRef = useRef<HTMLDivElement | null>(null);
   const JOBS_PER_PAGE = 5;
 
-  // Reset state when a new resume is provided from the parent flow.
+  // Reset state when a new resume is provided (even if text is the same).
   useEffect(() => {
     setSelectedJob(null);
     setJobs([]);
     setCurrentPage(1);
     setShowCustomJob(false);
     setCustomJobDescription("");
-  }, [resume]);
+  }, [resumeVersion]);
 
   const normalizeJob = (apiJob: any): Job => {
     const extractStacks = () => {
@@ -105,6 +106,8 @@ export const JobMatching = ({ resume, onJobSelect, onAnalysisComplete }: JobMatc
     }
 
     setIsSearching(true);
+    setSelectedJob(null);
+    setJobs([]);
 
     try {
       const apiBase = import.meta.env.VITE_API_URL || window.location.origin;
