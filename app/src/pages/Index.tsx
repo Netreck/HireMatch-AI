@@ -30,6 +30,7 @@ const Index = () => {
 
   const handleJobSelect = (job: any, customJob?: string) => {
     setSelectedJob(job || { title: "Vaga Customizada", custom: true, description: customJob });
+    setAnalysisData(null);
     setStep("feedback");
     setIsAdapted(false);
   };
@@ -54,7 +55,7 @@ const Index = () => {
 
     const doAdapt = async () => {
       setIsAdapting(true);
-      toast.info("Gerando e baixando currículo em PDF...");
+      toast.info("Gerando currículo adaptado...");
       try {
         const apiBase = import.meta.env.VITE_API_URL || window.location.origin;
         const response = await fetch(`${apiBase}/adapt`, {
@@ -95,9 +96,10 @@ const Index = () => {
           link.click();
           link.remove();
           window.URL.revokeObjectURL(pdfUrl);
+          toast.success("Currículo adaptado em PDF e download iniciado!");
         } else {
           if (pdfError) {
-            toast.error("Não foi possível gerar PDF automaticamente. Baixando .tex.");
+            toast.info("Não foi possível gerar PDF automaticamente. Baixando .tex.");
           }
           const blob = new Blob([texContent], { type: "application/x-tex;charset=utf-8" });
           const url = window.URL.createObjectURL(blob);
@@ -108,10 +110,10 @@ const Index = () => {
           link.click();
           link.remove();
           window.URL.revokeObjectURL(url);
+          toast.success("Currículo adaptado em .tex (PDF indisponível).");
         }
 
         setIsAdapted(true);
-        toast.success("Currículo adaptado e download iniciado!");
       } catch (error) {
         console.error(error);
         toast.error("Erro ao adaptar currículo");
@@ -132,6 +134,7 @@ const Index = () => {
     setResume("");
     setResumeVersion((v) => v + 1);
     setSelectedJob(null);
+    setAnalysisData(null);
     setIsAdapted(false);
     setIsAdapting(false);
   };
@@ -250,6 +253,7 @@ const Index = () => {
                 data={analysisData}
                 isAdapting={isAdapting}
                 isAdapted={isAdapted}
+                key={resumeVersion}
               />
             )}
           </div>
