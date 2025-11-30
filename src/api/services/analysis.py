@@ -56,7 +56,8 @@ Comparar **CURRÍCULO** e **VAGA** e retornar **somente um JSON válido** exatam
 {parser.get_format_instructions()}
 
 Instruções importantes:
-- Caso não tenha nao precise forçar ter muitos pontos positivos/negativos/sugestao
+- Não invente informações sobre a vaga ou o curriculo
+- Caso não tenha nao precise forçar ter muitos pontos positivos/negativos/sugestao se necessario nao coloque nenhum
 - De sugestoes de onde focar o curriculo para melhorar as chances/compatibilidade com a vaga
 - Se possivel seja "pessoal" citando um ou outro ponto especifico do curriculo que combina com a vaga
 - Pontos curtos
