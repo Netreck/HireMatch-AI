@@ -48,37 +48,46 @@ def create_output_parser() -> PydanticOutputParser:
 # ======================================================
 def build_prompt(curriculo: str, vaga: str, parser: PydanticOutputParser) -> str:
     return f"""
-Você é um especialista em análise de compatibilidade entre currículos e vagas.
+Você é um especialista em análise de compatibilidade entre currículos e vagas.  
+Sua tarefa é comparar **exclusivamente** o conteúdo fornecido no CURRÍCULO e na VAGA.
 
-Sua tarefa:
-Comparar **CURRÍCULO** e **VAGA** e retornar **somente um JSON válido** exatamente no formato:
+REGRAS CRÍTICAS (NÃO QUEBRAR):
+- Não invente informações.  
+-  Não deduza experiências ou habilidades que **não estão explicitamente escritas** no currículo.
+-  Não adicione tecnologias, experiências, cargos ou competências inexistentes.
+-  Não gere interpretações subjetivas ou suposições.
+
+-  Utilize **somente** as informações literais presentes no currículo para montar pontos fortes, pontos a melhorar e sugestões.
+- Se faltar informação, **assuma falta**, não preencha.
+-  Liste apenas correspondências reais entre currículo e vaga.
+-  Pontos devem ser curtos, técnicos e objetivos.
+- Se não houver itens suficientes para alguma seção, retorne menos itens — ou nenhum.
+
+FORMATO DO RETORNO (OBRIGATÓRIO):
+Retorne **apenas um JSON válido** seguindo estritamente:
 
 {parser.get_format_instructions()}
 
-Instruções importantes:
-- Não invente informações sobre a vaga ou o curriculo
-- Caso não tenha nao precise forçar ter muitos pontos positivos/negativos/sugestao se necessario nao coloque nenhum
-- De sugestoes de onde focar o curriculo para melhorar as chances/compatibilidade com a vaga
-- Se possivel seja "pessoal" citando um ou outro ponto especifico do curriculo que combina com a vaga
-- Pontos curtos
-- Seja direto, objetivo e técnico.
-- Liste apenas informações realmente relevantes para a vaga.
-- Pontos fortes: correspondências claras entre currículo e vaga.
-- Pontos a melhorar: lacunas reais de requisitos.
-- Sugestões: ações práticas que aumentariam a compatibilidade.
-- NÃO gere explicações, apenas o JSON final.
+ Diretrizes por seção:
+- **Pontos Fortes**: apenas matches reais e literais entre currículo e vaga.  
+- **Pontos a Melhorar**: lacunas reais onde o currículo não atende a requisitos da vaga.  
+- **Sugestões**: melhorias práticas no currículo (sem inventar habilidades).
 
--------------------------
-CURRÍCULO:
-{curriculo}
+ Nunca inclua explicações, justificativas ou qualquer texto fora do JSON.
 
-VAGA:
-{vaga}
--------------------------
+================================================================
 
-Retorne APENAS o JSON, sem texto adicional.
+CURRÍCULO (conteúdo literal a ser analisado):
+\"\"\"{curriculo}\"\"\"
+
+VAGA (conteúdo literal da vaga):
+\"\"\"{vaga}\"\"\"
+
+================================================================
+
+Saída esperada:
+Retorne **somente o JSON válido**, sem markdown, sem comentários e sem texto adicional.
 """
-
 
 # ======================================================
 # D. MAIN FUNCTION: COMPARA CURRÍCULO VS VAGA
