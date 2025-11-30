@@ -98,9 +98,7 @@ export const JobMatching = ({ resume, onJobSelect, onAnalysisComplete }: JobMatc
     setIsSearching(true);
 
     try {
-      const apiBase =
-        import.meta.env.VITE_API_URL ||
-        `${window.location.protocol}//${window.location.hostname}:8000`;
+      const apiBase = import.meta.env.VITE_API_URL || window.location.origin;
       const response = await fetch(`${apiBase}/match`, {
         method: "POST",
         headers: {
@@ -157,9 +155,7 @@ export const JobMatching = ({ resume, onJobSelect, onAnalysisComplete }: JobMatc
     const analyze = async () => {
       setIsAnalyzing(true);
       try {
-        const apiBase =
-          import.meta.env.VITE_API_URL ||
-          `${window.location.protocol}//${window.location.hostname}:8000`;
+        const apiBase = import.meta.env.VITE_API_URL || window.location.origin;
         const response = await fetch(`${apiBase}/analysis`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },

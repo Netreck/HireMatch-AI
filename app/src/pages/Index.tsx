@@ -54,9 +54,7 @@ const Index = () => {
       setIsAdapting(true);
       toast.info("Gerando e baixando currículo em PDF...");
       try {
-        const apiBase =
-          import.meta.env.VITE_API_URL ||
-          `${window.location.protocol}//${window.location.hostname}:8000`;
+        const apiBase = import.meta.env.VITE_API_URL || window.location.origin;
         const response = await fetch(`${apiBase}/adapt`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
