@@ -89,10 +89,10 @@ def compute_final_score(similarity_raw, sim_min, sim_max,
 # ======================================================
 def process_curriculo(curriculo: str) -> List[float]:
     load_dotenv()
-    api_key = os.getenv("api_key_openai")
+    api_key = os.getenv("api_key_openai") or os.getenv("OPENAI_API_KEY")
 
     if not api_key:
-        raise ValueError("OPENAI_API_KEY não encontrado no ambiente (.env).")
+        raise ValueError("OPENAI_API_KEY/api_key_openai não encontrado no ambiente (.env ou variáveis).")
 
     embeddings = OpenAIEmbeddings(
         model="text-embedding-3-large",
@@ -107,10 +107,10 @@ def process_curriculo(curriculo: str) -> List[float]:
 # ======================================================
 def buscar_ids_similaridade(curriculo_emb: List[float], top_k: int = 50) -> List[Dict[str, Any]]:
     load_dotenv()
-    pinecone_key = os.getenv("pinecone_key")
+    pinecone_key = os.getenv("pinecone_key") or os.getenv("PINECONE_API_KEY")
 
     if not pinecone_key:
-        raise ValueError("pinecone_key não encontrado no .env")
+        raise ValueError("pinecone_key/PINECONE_API_KEY não encontrado no .env ou variáveis")
 
     pc = Pinecone(api_key=pinecone_key)
     index = pc.Index("hirematch-jobs")

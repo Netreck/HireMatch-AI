@@ -89,11 +89,11 @@ export const ResumeUpload = ({ onResumeSubmit }: ResumeUploadProps) => {
   };
 
   return (
-    <Card className="p-6 md:p-8 shadow-[var(--shadow-card)] border-2 hover:border-primary/50 transition-all duration-300">
+    <Card className="p-4 sm:p-6 md:p-8 shadow-[var(--shadow-card)] border-2 hover:border-primary/50 transition-all duration-300">
       <div className="space-y-6">
         <div className="text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-primary to-accent mb-4">
-            <FileText className="w-8 h-8 text-primary-foreground" />
+          <div className="inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-primary to-accent mb-4">
+            <FileText className="w-7 h-7 sm:w-8 sm:h-8 text-primary-foreground" />
           </div>
           <h2 className="text-2xl font-bold mb-2">Adicione Seu Currículo</h2>
           <p className="text-muted-foreground">
@@ -102,7 +102,7 @@ export const ResumeUpload = ({ onResumeSubmit }: ResumeUploadProps) => {
         </div>
 
         <div
-          className={`relative border-2 border-dashed rounded-lg p-8 transition-all ${
+          className={`relative border-2 border-dashed rounded-lg p-6 sm:p-8 transition-all ${
             isDragging
               ? "border-primary bg-primary/5 scale-[1.02]"
               : "border-border hover:border-primary/50"

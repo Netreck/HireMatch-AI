@@ -55,7 +55,7 @@ export const FeedbackDisplay = ({
   };
 
   return (
-    <Card className="p-6 md:p-8 shadow-[var(--shadow-card)]">
+    <Card className="p-5 md:p-8 shadow-[var(--shadow-card)]">
       <div className="space-y-8">
         <div className="space-y-2">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
@@ -93,7 +93,7 @@ export const FeedbackDisplay = ({
           </div>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-6">
+        <div className="grid md:grid-cols-2 gap-5 md:gap-6">
           {/* Strengths */}
           <Card className="p-6 border-2 border-primary/20 bg-primary/5">
             <div className="flex items-center gap-3 mb-4">

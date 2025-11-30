@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Response
 from .services.matching import pipeline_matching
 from .services.analysis import comparar_curriculo_vaga
 from .services.adapt import gerar_curriculo_adaptado
@@ -13,6 +13,11 @@ class AdaptRequestModel(BaseModel):
     curriculo: str
     vaga: str
 router = APIRouter()
+
+@router.options("/{path:path}")
+async def options_handler(path: str):
+    # Handle CORS preflight requests explicitly to avoid validation errors on bodyless OPTIONS calls.
+    return Response(status_code=200)
 
 
 @router.post("/match")

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -42,6 +42,7 @@ export const JobMatching = ({ resume, onJobSelect, onAnalysisComplete }: JobMatc
   const [currentPage, setCurrentPage] = useState(1);
   const [isSearching, setIsSearching] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const mobileDetailRef = useRef<HTMLDivElement | null>(null);
   const JOBS_PER_PAGE = 5;
 
   const normalizeJob = (apiJob: any): Job => {
@@ -97,7 +98,10 @@ export const JobMatching = ({ resume, onJobSelect, onAnalysisComplete }: JobMatc
     setIsSearching(true);
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/match", {
+      const apiBase =
+        import.meta.env.VITE_API_URL ||
+        `${window.location.protocol}//${window.location.hostname}:8000`;
+      const response = await fetch(`${apiBase}/match`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -153,7 +157,10 @@ export const JobMatching = ({ resume, onJobSelect, onAnalysisComplete }: JobMatc
     const analyze = async () => {
       setIsAnalyzing(true);
       try {
-        const response = await fetch("http://127.0.0.1:8000/analysis", {
+        const apiBase =
+          import.meta.env.VITE_API_URL ||
+          `${window.location.protocol}//${window.location.hostname}:8000`;
+        const response = await fetch(`${apiBase}/analysis`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -189,6 +196,12 @@ export const JobMatching = ({ resume, onJobSelect, onAnalysisComplete }: JobMatc
   const totalPages = Math.max(1, Math.ceil(jobs.length / JOBS_PER_PAGE));
   const pageStart = (currentPage - 1) * JOBS_PER_PAGE;
   const currentJobs = jobs.slice(pageStart, pageStart + JOBS_PER_PAGE);
+
+  useEffect(() => {
+    if (selectedJob && mobileDetailRef.current) {
+      mobileDetailRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [selectedJob]);
 
   if (jobs.length === 0 && !showCustomJob) {
     return (
@@ -269,36 +282,118 @@ export const JobMatching = ({ resume, onJobSelect, onAnalysisComplete }: JobMatc
   }
 
   return (
-    <Card className="p-4 md:p-6 lg:p-7 shadow-[var(--shadow-card)] max-w-6xl mx-auto">
+    <Card className="p-4 sm:p-5 md:p-6 lg:p-7 shadow-[var(--shadow-card)] max-w-6xl mx-auto">
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h3 className="text-2xl font-bold">Vagas Compatíveis</h3>
-            <p className="text-muted-foreground">{jobs.length} vagas encontradas</p>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="space-y-1">
+            <h3 className="text-2xl font-bold leading-tight">Vagas Compatíveis</h3>
+            <p className="text-sm text-muted-foreground">{jobs.length} vagas encontradas</p>
           </div>
           <Button
             onClick={() => setShowCustomJob(true)}
             variant="outline"
+            className="w-full sm:w-auto"
           >
             Vaga Customizada
           </Button>
         </div>
 
-        <div className="grid lg:grid-cols-[1.2fr_1.1fr] gap-6">
+        <div className="grid gap-6 lg:grid-cols-[1.2fr_1.1fr]">
           <div className="space-y-4">
+            {selectedJob && (
+              <Card ref={mobileDetailRef} className="p-5 border-dashed border-primary/30 bg-primary/5 lg:hidden">
+                <div className="space-y-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="space-y-1">
+                      <h4 className="font-bold text-xl">{selectedJob.title}</h4>
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        {selectedJob.companyLogo && (
+                          <img
+                            src={selectedJob.companyLogo}
+                            alt={selectedJob.company || "Empresa"}
+                            className="w-8 h-8 object-contain rounded bg-white p-0.5 border"
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).style.display = "none";
+                            }}
+                          />
+                        )}
+                        <p>{selectedJob.company}</p>
+                      </div>
+                      <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
+                        {selectedJob.location && <span className="rounded-full bg-muted px-2 py-1">{selectedJob.location}</span>}
+                        {selectedJob.jobType && <span className="rounded-full bg-muted px-2 py-1 capitalize">{selectedJob.jobType.replaceAll("_", " ")}</span>}
+                        {selectedJob.salary && <span className="rounded-full bg-muted px-2 py-1">{selectedJob.salary}</span>}
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <div className={`inline-flex items-center gap-2 px-3 py-2 rounded-full font-bold ${getMatchClasses(selectedJob.match)}`}>
+                        <TrendingUp className="w-4 h-4" />
+                        {selectedJob.match}%
+                      </div>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="h-9 w-9"
+                        onClick={() => setSelectedJob(null)}
+                      >
+                        <X className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <p className="text-sm font-semibold text-primary">Descrição da vaga</p>
+                    <div className="text-sm text-muted-foreground whitespace-pre-line leading-relaxed max-h-64 overflow-y-auto rounded-md bg-card p-3 border border-border/50">
+                      {selectedJob.description}
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <p className="text-sm font-semibold text-primary">Tech stacks</p>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedJob.skills.map((skill) => (
+                        <Badge key={skill} variant="secondary" className="bg-secondary">
+                          {skill}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    {selectedJob.url && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="flex-1"
+                        onClick={() => window.open(selectedJob.url as string, "_blank", "noopener,noreferrer")}
+                      >
+                        Ver vaga <ExternalLink className="w-4 h-4 ml-2" />
+                      </Button>
+                    )}
+                    <Button
+                      onClick={handleAnalyzeCompatibility}
+                      disabled={isAnalyzing}
+                      className="flex-1 bg-gradient-to-r from-primary to-accent hover:opacity-90 shadow-[var(--shadow-button)] disabled:opacity-70"
+                    >
+                      {isAnalyzing ? "Analisando..." : "Analisar compatibilidade"}
+                    </Button>
+                  </div>
+                </div>
+              </Card>
+            )}
             {currentJobs.map((job) => (
               <Card
                 key={job.id}
-                className={`p-6 cursor-pointer transition-all hover:shadow-lg ${
+                className={`p-5 sm:p-6 cursor-pointer transition-all hover:shadow-lg ${
                   selectedJob?.id === job.id
                     ? "border-2 border-primary bg-primary/5"
                     : "border hover:border-primary/50"
                 }`}
                 onClick={() => handleJobSelect(job)}
               >
-                <div className="flex items-start justify-between gap-4">
+                <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                   <div className="flex-1 space-y-3">
-                    <div className="flex items-start gap-3">
+                    <div className="flex flex-col sm:flex-row sm:items-start gap-3">
                       <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center overflow-hidden">
                         {job.companyLogo ? (
                           <img
@@ -323,11 +418,11 @@ export const JobMatching = ({ resume, onJobSelect, onAnalysisComplete }: JobMatc
                         </div>
                       </div>
                     </div>
-                  <div className="flex flex-wrap gap-2">
-                    {job.languages.map((skill) => (
-                      <Badge
-                        key={skill}
-                        variant="secondary"
+                    <div className="flex flex-wrap gap-2">
+                      {job.languages.map((skill) => (
+                        <Badge
+                          key={skill}
+                          variant="secondary"
                           className="bg-secondary"
                         >
                           {skill}
@@ -335,13 +430,13 @@ export const JobMatching = ({ resume, onJobSelect, onAnalysisComplete }: JobMatc
                       ))}
                     </div>
                   </div>
-                  <div className="text-right flex-shrink-0">
+                  <div className="text-left lg:text-right flex-shrink-0 space-y-2">
                     <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full font-bold ${getMatchClasses(job.match)}`}>
                       <TrendingUp className="w-4 h-4" />
                       {job.match}%
                     </div>
                     {selectedJob?.id === job.id && (
-                      <div className="mt-2 flex items-center gap-1 text-primary text-sm font-medium">
+                      <div className="flex items-center gap-1 text-primary text-sm font-medium">
                         <CheckCircle2 className="w-4 h-4" />
                         Selecionada
                       </div>
@@ -352,7 +447,7 @@ export const JobMatching = ({ resume, onJobSelect, onAnalysisComplete }: JobMatc
             ))}
 
             {jobs.length > JOBS_PER_PAGE && (
-              <div className="flex items-center justify-between pt-2">
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between pt-2">
                 <p className="text-sm text-muted-foreground">
                   Página {currentPage} de {totalPages}
                 </p>
@@ -378,7 +473,7 @@ export const JobMatching = ({ resume, onJobSelect, onAnalysisComplete }: JobMatc
             )}
           </div>
 
-          <Card className="p-6 border-dashed border-primary/30 bg-primary/5 lg:min-h-[420px] relative">
+          <Card className="p-6 border-dashed border-primary/30 bg-primary/5 lg:min-h-[420px] relative hidden lg:block">
             {selectedJob ? (
               <div className="space-y-4">
                 <div className="flex items-start justify-between gap-3">

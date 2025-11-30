@@ -35,28 +35,32 @@ def create_client() -> OpenAI:
 # ======================================================
 def build_prompt(curriculo: str, vaga: str) -> str:
     return f"""
-Você é um especialista em RH e LaTeX.
-Gere um currículo final em LaTeX completo (sem markdown, sem JSON) usando EXATAMENTE o modelo base abaixo como referência de estrutura/estilo.
+Você é um especialista em RH, e LaTeX.
+Você recebera um curriculo e uma vaga, adapte o curriculo enviado para ser mais compativel com a vaga  
+Gere **um currículo final em LaTeX completo**, usando EXATAMENTE a estrutura do modelo abaixo.
 
-Requisitos:
-- Retorne somente LaTeX.
-- Use o preâmbulo e comandos do modelo fornecido (documentclass{{resume}}, geometry, \\name, \\address, rSection etc.).
-- Substitua os conteúdos das seções pelo que for mais relevante do currículo para a vaga.
-- Mantenha tom profissional, direto e conciso; use bullet points em experiências.
-- Escape caracteres especiais do LaTeX (% _ & # $) quando necessário.
-- Se algo do currículo não for relevante, resuma ou omita.
-- use palavras chaves e coisas que contribuam para uma ia entender melhor o curriculo
-MODELO BASE (mantenha estrutura e `comandos`, adaptando apenas o conteúdo):
+Regras obrigatórias e definicoes:
+- Retorne **somente LaTeX**, sem explicações, sem markdown.
+- Não invente informações que nao estao no curriculo original
+- Preserve todos os comandos, seções e estrutura do modelo.
+- Substitua cada seção com conteúdo otimizado para a vaga, natural, profissional e conciso.
+- Use palavras-chave técnicas e comportamentais relevantes da vaga.
+- Mantenha frases diretas, foco em impacto e alinhamento com a descrição do cargo.
+- Escape caracteres especiais do LaTeX.
+- Cada seção do modelo contém **somente uma descrição curta** indicando o que deve ser colocado ali.
 
-\\documentclass{{resume}} % Use the custom resume.cls style
+MODELO BASE (mantenha estrutura e comandos):
 
-\\usepackage[left=0.4 in,top=0.4in,right=0.4 in,bottom=0.4in]{{geometry}} % Document margins
-\\newcommand{{\\tab}}[1]{{\\hspace{{.2667\\textwidth}}\\rlap{{#1}}}} 
+\\documentclass{{resume}}
+
+\\usepackage[left=0.4 in,top=0.4in,right=0.4 in,bottom=0.4in]{{geometry}}
+\\newcommand{{\\tab}}[1]{{\\hspace{{.2667\\textwidth}}\\rlap{{#1}}}}
 \\newcommand{{\\itab}}[1]{{\\hspace{{0em}}\\rlap{{#1}}}}
-\\name{{Gabriel Victor Lima Gonçalves}} % Your name
-\\address{{+55 (11)94924-4811 \\\\ Santo André, SP}} 
-\\address{{\\href{{mailto:gabrielvgonc@gmail.com}}{{gabrielvgonc@gmail.com}} \\\\ \\href{{www.linkedin.com/in/gabriel-victor-71187b223}}{{www.linkedin.com/in/gabriel-victor-71187b223}}}} 
-\\\\  
+
+\\name{{[Nome Completo]}}
+\\address{{[Telefone] \\\\ [Cidade, Estado]}}
+\\address{{\\href{{mailto:[email]}}{{[email]}} \\\\ \\href{{[linkedin]}}{{[linkedin]}}}}
+\\\\
 
 \\begin{{document}}
 
@@ -65,9 +69,7 @@ MODELO BASE (mantenha estrutura e `comandos`, adaptando apenas o conteúdo):
 %----------------------------------------------------------------------------------------
 
 \\begin{{rSection}}{{Objective}}
-
-Seeking career growth opportunities in the field of software development.
-
+(Resumo curto de 1--2 linhas sobre objetivos profissionais alinhados à vaga.)
 \\end{{rSection}}
 
 %----------------------------------------------------------------------------------------
@@ -75,23 +77,15 @@ Seeking career growth opportunities in the field of software development.
 %----------------------------------------------------------------------------------------
 
 \\begin{{rSection}}{{Education}}
-
-{{\\bf Bachelor of Computer Science}}, Universidade Federal do ABC \\hfill {{Expected Graduation: 2026}}\\\\ 
-
+(Listar formação acadêmica principal, curso, instituição e datas.)
 \\end{{rSection}}
 
 %----------------------------------------------------------------------------------------
-% TECHNICAL STRENGTHS	
+% SKILLS
 %----------------------------------------------------------------------------------------
+
 \\begin{{rSection}}{{Skills}}
-
-\\begin{{tabular}}{{ @{{}} >{{\\bfseries}}l @{{\\hspace{{6ex}}}} l }}
-Main Technical Skills & Python, SQL, ETL, Java, Git \\\\
-Soft Skills & Communication, Adaptability, Analytical Thinking, Proactivity \\\\
-Github Portfolio & \\href{{https://github.com/Netreck}}{{https://github.com/Netreck}} \\\\
-Languages & English, Portuguese
-\\end{{tabular}}\\\\
-
+(Tabela resumida com habilidades técnicas relevantes, soft skills e idiomas.)
 \\end{{rSection}}
 
 %----------------------------------------------------------------------------------------
@@ -99,15 +93,7 @@ Languages & English, Portuguese
 %----------------------------------------------------------------------------------------
 
 \\begin{{rSection}}{{Professional Experience}}
-
-\\textbf{{Intern – Bank of America}} \\hfill Jun 2025 -- Present \\\\
-\\textit{{VP Global Technology -- Tech Rotation Program}}
-\\begin{{itemize}}
-    \\item Developed test automation and tools to support QA teams in payment systems.
-    \\item Contributed to internal automation and process optimization projects.
-    \\item Technologies: Java, Python, Git, SQL, Node.js, HTML, CSS, Octane, QTest, Matera.
-\\end{{itemize}}
-
+(Listar experiências profissionais mais relevantes com bullets objetivos focados em impacto e tecnologias.)
 \\end{{rSection}}
 
 %----------------------------------------------------------------------------------------
@@ -115,20 +101,8 @@ Languages & English, Portuguese
 %----------------------------------------------------------------------------------------
 
 \\begin{{rSection}}{{Extracurricular Activities}}
-
-\\textbf{{Member – Green Team Hacker Club}} \\hfill Jan 2024 -- Jan 2025 \\\\
-\\textbf{{Project Manager – Data Projects, Green Team Hacker Club}} \\hfill Jan 2025 -- Present \\\\
-Federal University of ABC (UFABC) \\hfill \\textit{{Santo André, SP}}
- \\begin{{itemize}}
-    \\itemsep -3pt {{}} 
-    \\item Official student-led organization linked to UFABC. 
-    \\item Participated in classes and projects related to Data Science.
-    \\item Defined and managed technology stack for projects, considering scalability, performance, and integration.
-    \\item Managed team activities including task delegation, progress tracking, and technical support.
-    \\item Worked with ETL, process automation (pipelines), SQL, PostgreSQL, Data Visualization (Seaborn, Matplotlib), Data Modeling, Machine Learning models (Scikit-learn, TensorFlow), model deployment via APIs, MLflow, and LLMs. 
- \\end{{itemize}}
- 
-\\end{{rSection}} 
+(Projetos, grupos, iniciativas ou atividades relevantes para a vaga.)
+\\end{{rSection}}
 
 \\end{{document}}
 
@@ -159,12 +133,11 @@ def gerar_curriculo_adaptado(curriculo: str, vaga: str) -> Dict[str, str]:
     prompt = build_prompt(curriculo, vaga)
 
     response = client.chat.completions.create(
-        model="gpt-4.1-mini",
-        temperature=0.3,
+        model="gpt-4.1",
         messages=[
             {
                 "role": "system",
-                "content": "Você gera currículos em LaTeX prontos para compilação. Nunca retorne Markdown nem JSON.",
+                "content": "Você gera currículos em LaTeX utilizando um curriculo base e uma descrição de vaga prontos para compilação. Nunca retorne Markdown nem JSON.",
             },
             {"role": "user", "content": prompt},
         ],
