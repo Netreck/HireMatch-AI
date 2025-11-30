@@ -45,6 +45,15 @@ export const JobMatching = ({ resume, onJobSelect, onAnalysisComplete }: JobMatc
   const mobileDetailRef = useRef<HTMLDivElement | null>(null);
   const JOBS_PER_PAGE = 5;
 
+  // Reset state when a new resume is provided from the parent flow.
+  useEffect(() => {
+    setSelectedJob(null);
+    setJobs([]);
+    setCurrentPage(1);
+    setShowCustomJob(false);
+    setCustomJobDescription("");
+  }, [resume]);
+
   const normalizeJob = (apiJob: any): Job => {
     const extractStacks = () => {
       const stacks = apiJob?.tech_stacks_found;
