@@ -48,7 +48,7 @@ Regras obrigatórias e definicoes:
 - Mantenha frases diretas, foco em impacto e alinhamento com a descrição do cargo.
 - Escape caracteres especiais do LaTeX.
 - Cada seção do modelo contém **somente uma descrição curta** indicando o que deve ser colocado ali.
-
+- Retorne sempre o curriculo em ingles
 MODELO BASE (mantenha estrutura e comandos):
 
 \\documentclass{{resume}}
