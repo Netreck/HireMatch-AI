@@ -306,7 +306,7 @@ const Index = () => {
       {/* Footer */}
       <footer className="py-8 border-t bg-card/30">
         <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
-          <p>© 2024 Analisador de Currículos. Todos os direitos reservados.</p>
+          <p>© 2025 Analisador de Currículos. Linkedin : https://www.linkedin.com/in/gabriel-victor-71187b223/</p>
         </div>
       </footer>
     </div>
