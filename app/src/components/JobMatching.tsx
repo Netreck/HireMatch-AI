@@ -31,7 +31,7 @@ interface FeedbackData {
 interface JobMatchingProps {
   resume: string;
   resumeVersion: number;
-  onJobSelect: (job: Job | null, customJob?: string, score?: number) => void;
+  onJobSelect: (job: Job | null, customJob?: string, score?: number) => void | Promise<void>;
   onAnalysisComplete?: (job: Job, analysis: FeedbackData) => void;
 }
 
@@ -152,29 +152,32 @@ export const JobMatching = ({ resume, resumeVersion, onJobSelect, onAnalysisComp
       return;
     }
 
-    // Calcular score de compatibilidade
+    // Calcular score de compatibilidade e aguardar análise completa
     setIsParsing(true);
     try {
       const apiBase = import.meta.env.VITE_API_URL || window.location.origin;
-      const response = await fetch(`${apiBase}/api/parse-job`, {
+
+      // 1. Calcular score
+      const parseResponse = await fetch(`${apiBase}/api/parse-job`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ description: customJobDescription, curriculo: resume }),
       });
 
-      if (!response.ok) {
+      if (!parseResponse.ok) {
         throw new Error("Erro ao processar descrição da vaga");
       }
 
-      const data = await response.json();
-      onJobSelect(null, customJobDescription, data.score);
-      toast.success("Vaga processada com sucesso!");
+      const parseData = await parseResponse.json();
+
+      // 2. Chamar análise e aguardar (onJobSelect é async e espera a análise)
+      await onJobSelect(null, customJobDescription, parseData.score);
     } catch (error) {
       console.error(error);
       toast.error("Erro ao processar descrição da vaga");
-    } finally {
       setIsParsing(false);
     }
+    // Não reseta isParsing aqui - será resetado quando a página mudar
   };
 
   const handleAnalyzeCompatibility = () => {

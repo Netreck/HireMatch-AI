@@ -37,10 +37,9 @@ const Index = () => {
     };
     setSelectedJob(jobData);
     setAnalysisData(null);
-    setStep("feedback");
     setIsAdapted(false);
 
-    // Se for vaga customizada, chamar análise automaticamente
+    // Se for vaga customizada, chamar análise e só ir para feedback após receber
     if (!job && customJob) {
       try {
         const apiBase = import.meta.env.VITE_API_URL || window.location.origin;
@@ -56,10 +55,16 @@ const Index = () => {
         if (response.ok) {
           const analysisResult = await response.json();
           setAnalysisData(analysisResult);
+          setStep("feedback");
+        } else {
+          toast.error("Erro ao analisar vaga");
         }
       } catch (error) {
         console.error("Erro ao analisar vaga:", error);
+        toast.error("Erro ao analisar vaga");
       }
+    } else {
+      setStep("feedback");
     }
   };
 
