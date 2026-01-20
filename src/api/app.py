@@ -18,7 +18,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(match_router)
+app.include_router(match_router, prefix="/api")
 
 # Servir build do frontend, se existir.
 static_dir = Path(__file__).resolve().parents[2] / "app" / "dist"

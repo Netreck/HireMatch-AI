@@ -58,7 +58,7 @@ const Index = () => {
       toast.info("Gerando currículo adaptado...");
       try {
         const apiBase = import.meta.env.VITE_API_URL || window.location.origin;
-        const response = await fetch(`${apiBase}/adapt`, {
+        const response = await fetch(`${apiBase}/api/adapt`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
