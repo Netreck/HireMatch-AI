@@ -176,8 +176,10 @@ export const JobMatching = ({ resume, resumeVersion, onJobSelect, onAnalysisComp
       console.error(error);
       toast.error("Erro ao processar descrição da vaga");
       setIsParsing(false);
+    } finally {
+      // Libera o botão ao voltar da análise, já que o componente não é desmontado
+      setIsParsing(false);
     }
-    // Não reseta isParsing aqui - será resetado quando a página mudar
   };
 
   const handleAnalyzeCompatibility = () => {
