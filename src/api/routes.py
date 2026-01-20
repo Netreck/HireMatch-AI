@@ -2,6 +2,7 @@ from fastapi import APIRouter, Response
 from .services.matching import pipeline_matching
 from .services.analysis import comparar_curriculo_vaga
 from .services.adapt import gerar_curriculo_adaptado
+from .services.parse_job import parse_job_with_score
 import asyncio
 from pydantic import BaseModel
 
@@ -12,6 +13,11 @@ class RequestModel(BaseModel):
 class AdaptRequestModel(BaseModel):
     curriculo: str
     vaga: str
+
+class ParseJobRequestModel(BaseModel):
+    description: str
+    curriculo: str
+
 router = APIRouter()
 
 @router.options("/{path:path}")
@@ -38,3 +44,8 @@ async def adapt(data: AdaptRequestModel):
     loop = asyncio.get_event_loop()
     resultado = await loop.run_in_executor(None, gerar_curriculo_adaptado, data.curriculo, data.vaga)
     return resultado
+
+
+@router.post("/parse-job")
+def parse_job(data: ParseJobRequestModel):
+    return parse_job_with_score(data.description, data.curriculo)

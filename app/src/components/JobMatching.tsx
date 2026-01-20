@@ -31,7 +31,7 @@ interface FeedbackData {
 interface JobMatchingProps {
   resume: string;
   resumeVersion: number;
-  onJobSelect: (job: Job | null, customJob?: string) => void;
+  onJobSelect: (job: Job | null, customJob?: string, score?: number) => void;
   onAnalysisComplete?: (job: Job, analysis: FeedbackData) => void;
 }
 
@@ -43,6 +43,7 @@ export const JobMatching = ({ resume, resumeVersion, onJobSelect, onAnalysisComp
   const [currentPage, setCurrentPage] = useState(1);
   const [isSearching, setIsSearching] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [isParsing, setIsParsing] = useState(false);
   const mobileDetailRef = useRef<HTMLDivElement | null>(null);
   const JOBS_PER_PAGE = 5;
 
@@ -145,13 +146,35 @@ export const JobMatching = ({ resume, resumeVersion, onJobSelect, onAnalysisComp
     setSelectedJob(job);
   };
 
-  const handleCustomJobSubmit = () => {
+  const handleCustomJobSubmit = async () => {
     if (!customJobDescription.trim()) {
       toast.error("Por favor, adicione a descrição da vaga");
       return;
     }
-    onJobSelect(null, customJobDescription);
-    toast.success("Descrição da vaga recebida!");
+
+    // Calcular score de compatibilidade
+    setIsParsing(true);
+    try {
+      const apiBase = import.meta.env.VITE_API_URL || window.location.origin;
+      const response = await fetch(`${apiBase}/api/parse-job`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ description: customJobDescription, curriculo: resume }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Erro ao processar descrição da vaga");
+      }
+
+      const data = await response.json();
+      onJobSelect(null, customJobDescription, data.score);
+      toast.success("Vaga processada com sucesso!");
+    } catch (error) {
+      console.error(error);
+      toast.error("Erro ao processar descrição da vaga");
+    } finally {
+      setIsParsing(false);
+    }
   };
 
   const handleAnalyzeCompatibility = () => {
@@ -268,16 +291,19 @@ export const JobMatching = ({ resume, resumeVersion, onJobSelect, onAnalysisComp
             onChange={(e) => setCustomJobDescription(e.target.value)}
             className="min-h-[250px] resize-none"
           />
+
           <div className="flex gap-3">
             <Button
               onClick={handleCustomJobSubmit}
+              disabled={isParsing || !customJobDescription.trim()}
               size="lg"
               className="flex-1 bg-gradient-to-r from-primary to-accent hover:opacity-90 shadow-[var(--shadow-button)]"
             >
-              Analisar Compatibilidade
+              {isParsing ? "Processando..." : "Analisar Compatibilidade"}
             </Button>
             <Button
               onClick={() => setShowCustomJob(false)}
+              disabled={isParsing}
               variant="outline"
               size="lg"
             >

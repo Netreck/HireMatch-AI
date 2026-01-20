@@ -28,11 +28,39 @@ const Index = () => {
     setIsAdapted(false);
   };
 
-  const handleJobSelect = (job: any, customJob?: string) => {
-    setSelectedJob(job || { title: "Vaga Customizada", custom: true, description: customJob });
+  const handleJobSelect = async (job: any, customJob?: string, score?: number) => {
+    const jobData = job || {
+      title: "Vaga Customizada",
+      custom: true,
+      description: customJob,
+      score: score,
+    };
+    setSelectedJob(jobData);
     setAnalysisData(null);
     setStep("feedback");
     setIsAdapted(false);
+
+    // Se for vaga customizada, chamar análise automaticamente
+    if (!job && customJob) {
+      try {
+        const apiBase = import.meta.env.VITE_API_URL || window.location.origin;
+        const response = await fetch(`${apiBase}/api/analysis`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            curriculo: resume,
+            vaga: customJob,
+          }),
+        });
+
+        if (response.ok) {
+          const analysisResult = await response.json();
+          setAnalysisData(analysisResult);
+        }
+      } catch (error) {
+        console.error("Erro ao analisar vaga:", error);
+      }
+    }
   };
 
   const handleAnalysisComplete = (job: any, analysis: any) => {
@@ -248,6 +276,7 @@ const Index = () => {
                 companyName={selectedJob?.company}
                 companyLogo={selectedJob?.companyLogo}
                 jobUrl={selectedJob?.url}
+                jobScore={selectedJob?.match ?? selectedJob?.score}
                 onAdaptResume={handleAdaptResume}
                 onBackToMatching={handleBackToMatching}
                 data={analysisData}

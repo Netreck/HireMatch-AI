@@ -16,6 +16,7 @@ interface FeedbackDisplayProps {
   companyName?: string;
   companyLogo?: string;
   jobUrl?: string;
+  jobScore?: number;
   onAdaptResume: () => Promise<void> | void;
   onBackToMatching?: () => void;
   data?: FeedbackData;
@@ -28,6 +29,7 @@ export const FeedbackDisplay = ({
   companyName,
   companyLogo,
   jobUrl,
+  jobScore,
   onAdaptResume,
   onBackToMatching,
   data,
@@ -83,6 +85,20 @@ export const FeedbackDisplay = ({
               </Button>
             )}
           </div>
+          {/* Score Badge */}
+          {jobScore !== undefined && (
+            <div className="flex justify-center">
+              <div className={`inline-flex items-center gap-2 px-6 py-3 rounded-full font-bold text-lg ${
+                jobScore > 60 ? "bg-emerald-500 text-white" :
+                jobScore > 30 ? "bg-amber-500 text-white" :
+                "bg-red-500 text-white"
+              }`}>
+                <span>Compatibilidade:</span>
+                <span className="text-2xl">{jobScore}%</span>
+              </div>
+            </div>
+          )}
+
           <div className="text-center">
             <h3 className="text-2xl font-bold mb-2">Análise Completa</h3>
             {jobTitle && (
