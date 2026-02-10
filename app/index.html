@@ -1,22 +1,33 @@
 <!doctype html>
-<html lang="en">
+<html lang="pt-BR" class="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Analisador de Currículos - Otimize Seu CV com IA</title>
+    <title>HireMatch AI - Transforme Seu Currículo com Inteligência Artificial</title>
     <meta name="description" content="Analise e otimize seu currículo com inteligência artificial. Compare com vagas reais e receba feedback personalizado para aumentar suas chances de contratação." />
-    <meta name="author" content="Analisador de Currículos" />
+    <meta name="author" content="HireMatch AI" />
+    <meta name="theme-color" content="#22c55e" />
+
+    <!-- Preconnect to Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
     <link rel="icon" type="image/png" href="/mascot.png" />
     <link rel="shortcut icon" href="/mascot.png" />
-    <meta property="og:title" content="Analisador de Currículos - Otimize Seu CV com IA" />
+    <link rel="apple-touch-icon" href="/mascot.png" />
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="HireMatch AI - Transforme Seu Currículo com IA" />
     <meta property="og:description" content="Analise e otimize seu currículo com inteligência artificial. Compare com vagas reais e receba feedback personalizado." />
     <meta property="og:type" content="website" />
-    <meta property="og:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+    <meta property="og:image" content="/mascot.png" />
+    <meta property="og:locale" content="pt_BR" />
 
+    <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@Lovable" />
-    <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+    <meta name="twitter:title" content="HireMatch AI - Transforme Seu Currículo com IA" />
+    <meta name="twitter:description" content="Analise e otimize seu currículo com inteligência artificial." />
+    <meta name="twitter:image" content="/mascot.png" />
 
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-M9E0538E2L"></script>
@@ -26,6 +37,40 @@
       gtag('js', new Date());
       gtag('config', 'G-M9E0538E2L');
     </script>
+
+    <style>
+      /* Critical CSS for faster initial paint */
+      :root {
+        color-scheme: dark;
+      }
+      html {
+        background: hsl(160 25% 4%);
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background: hsl(160 25% 4%);
+      }
+      /* Initial loading state */
+      #root:empty {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+      }
+      #root:empty::after {
+        content: '';
+        width: 48px;
+        height: 48px;
+        border: 3px solid hsl(142 69% 58% / 0.2);
+        border-top-color: hsl(142 69% 58%);
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      }
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+    </style>
   </head>
 
   <body>

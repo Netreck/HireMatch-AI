@@ -2,8 +2,20 @@ import { useState } from "react";
 import { ResumeUpload } from "@/components/ResumeUpload";
 import { JobMatching } from "@/components/JobMatching";
 import { FeedbackDisplay } from "@/components/FeedbackDisplay";
-import mascot from "@/assets/mascot.png";
+import { MascotMini } from "@/components/MascotAI";
+import { NeuralBackground } from "@/components/BackgroundEffects";
 import { toast } from "sonner";
+import {
+  CheckCircle2,
+  FileText,
+  Briefcase,
+  BarChart3,
+  Github,
+  Linkedin,
+  Sparkles,
+  RefreshCw,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const Index = () => {
   const [step, setStep] = useState<"upload" | "matching" | "feedback">("upload");
@@ -18,6 +30,8 @@ const Index = () => {
     sugestoes: string[];
   };
   const [analysisData, setAnalysisData] = useState<AnalysisData | null>(null);
+
+  const getApiBase = () => (import.meta.env.VITE_API_URL ?? "").replace(/\/$/, "");
 
   const handleResumeSubmit = (resumeText: string) => {
     setResume(resumeText);
@@ -39,10 +53,9 @@ const Index = () => {
     setAnalysisData(null);
     setIsAdapted(false);
 
-    // Se for vaga customizada, chamar análise e só ir para feedback após receber
     if (!job && customJob) {
       try {
-        const apiBase = import.meta.env.VITE_API_URL || window.location.origin;
+        const apiBase = getApiBase();
         const response = await fetch(`${apiBase}/api/analysis`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -90,7 +103,7 @@ const Index = () => {
       setIsAdapting(true);
       toast.info("Gerando currículo adaptado...");
       try {
-        const apiBase = import.meta.env.VITE_API_URL || window.location.origin;
+        const apiBase = getApiBase();
         const response = await fetch(`${apiBase}/api/adapt`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -172,177 +185,294 @@ const Index = () => {
     setIsAdapting(false);
   };
 
+  const steps = [
+    { id: "upload", label: "Currículo", icon: FileText },
+    { id: "matching", label: "Vagas", icon: Briefcase },
+    { id: "feedback", label: "Análise", icon: BarChart3 },
+  ];
+
+  const currentStepIndex = steps.findIndex((s) => s.id === step);
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-secondary">
-      {/* Header */}
-      <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container mx-auto px-4 sm:px-6 py-4">
-          <div className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-3 sm:gap-4">
-              <img src={mascot} alt="Mascote" className="w-10 h-10 sm:w-12 sm:h-12" />
-              <div>
-                <h1 className="text-xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                  Analisador de Currículos
-                </h1>
-                <p className="text-xs text-muted-foreground">
-                  Otimize seu currículo com IA
-                </p>
-              </div>
-            </div>
-            {step !== "upload" && (
-              <button
-                onClick={resetFlow}
-                className="text-xs sm:text-sm text-muted-foreground hover:text-primary transition-colors whitespace-nowrap"
-              >
-                Novo Currículo
-              </button>
-            )}
-          </div>
-        </div>
-      </header>
+    <div className="min-h-screen relative overflow-hidden">
+      {/* Animated Background */}
+      <NeuralBackground showOrbs showParticles />
 
-      {/* Hero Section */}
-      <section className="py-10 sm:py-12 md:py-20">
-        <div className="container mx-auto px-4 sm:px-6">
-          <div className="max-w-4xl mx-auto text-center mb-10 md:mb-12">
-            <div className="flex justify-center mb-6">
-              <img
-                src={mascot}
-                alt="Mascote Analisador"
-                className="w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40 drop-shadow-2xl animate-bounce-slow"
-              />
-            </div>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent animate-gradient">
-              Transforme Seu Currículo
-            </h2>
-            <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
-              Análise inteligente que compara seu currículo com vagas reais e fornece
-              feedback personalizado para aumentar suas chances de contratação
-            </p>
-          </div>
-
-          {/* Progress Steps */}
-          <div className="max-w-3xl mx-auto mb-8 px-2">
-            <div className="flex items-center justify-center gap-3 sm:gap-4 flex-wrap">
-              {[
-                { id: "upload", label: "Currículo" },
-                { id: "matching", label: "Vagas" },
-                { id: "feedback", label: "Análise" },
-              ].map((item, idx) => (
-                <div key={item.id} className="flex items-center min-w-[110px] justify-center">
-                  <div
-                    className={`flex items-center justify-center w-10 h-10 rounded-full font-bold transition-all ${
-                      step === item.id
-                        ? "bg-gradient-to-r from-primary to-accent text-primary-foreground scale-110 shadow-lg"
-                        : idx < ["upload", "matching", "feedback"].indexOf(step)
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-muted text-muted-foreground"
-                    }`}
-                  >
-                    {idx + 1}
-                  </div>
-                  <span
-                    className={`ml-2 text-xs sm:text-sm font-medium ${
-                      step === item.id ? "text-primary" : "text-muted-foreground"
-                    }`}
-                  >
-                    {item.label}
-                  </span>
-                  {idx < 2 && (
-                    <div
-                      className={`hidden sm:block w-12 md:w-20 h-1 mx-2 rounded-full transition-all ${
-                        idx < ["upload", "matching", "feedback"].indexOf(step)
-                          ? "bg-primary"
-                          : "bg-muted"
-                      }`}
-                    />
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Content */}
-          <div className="max-w-4xl mx-auto space-y-6">
-            {step === "upload" && (
-              <ResumeUpload onResumeSubmit={handleResumeSubmit} />
-            )}
-            <div className={step === "matching" ? "" : "hidden"}>
-              <JobMatching
-                resume={resume}
-                resumeVersion={resumeVersion}
-                onJobSelect={handleJobSelect}
-                onAnalysisComplete={handleAnalysisComplete}
-              />
-            </div>
-            {step === "feedback" && (
-              <FeedbackDisplay
-                jobTitle={selectedJob?.title}
-                companyName={selectedJob?.company}
-                companyLogo={selectedJob?.companyLogo}
-                jobUrl={selectedJob?.url}
-                jobScore={selectedJob?.match ?? selectedJob?.score}
-                onAdaptResume={handleAdaptResume}
-                onBackToMatching={handleBackToMatching}
-                data={analysisData}
-                isAdapting={isAdapting}
-                isAdapted={isAdapted}
-                key={resumeVersion}
-              />
-            )}
-          </div>
-        </div>
-      </section>
-
-      {/* Features Section */}
-      <section className="py-16 bg-card/30">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto">
-            <h3 className="text-2xl font-bold text-center mb-12">
-              Como Funciona
-            </h3>
-            <div className="grid md:grid-cols-3 gap-8">
-              {[
-                {
-                  step: "1",
-                  title: "Envie Seu Currículo",
-                  description: "Cole o texto ou faça upload do arquivo do seu currículo",
-                },
-                {
-                  step: "2",
-                  title: "Compare com Vagas",
-                  description: "Nossa IA analisa e encontra as vagas mais compatíveis",
-                },
-                {
-                  step: "3",
-                  title: "Receba Feedback",
-                  description: "Obtenha análise detalhada e adapte seu currículo",
-                },
-              ].map((feature) => (
-                <div
-                  key={feature.step}
-                  className="text-center p-6 rounded-lg hover:bg-card/50 transition-all"
-                >
-                  <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br from-primary to-accent text-primary-foreground font-bold text-xl mb-4">
-                    {feature.step}
-                  </div>
-                  <h4 className="font-bold mb-2">{feature.title}</h4>
-                  <p className="text-sm text-muted-foreground">
-                    {feature.description}
+      {/* Main Content */}
+      <div className="relative z-10">
+        {/* Header */}
+        <header className="glass-card border-b sticky top-0 z-50">
+          <div className="container mx-auto px-4 sm:px-6 py-4">
+            <div className="flex items-center justify-between gap-4">
+              {/* Logo */}
+              <div className="flex items-center gap-3 sm:gap-4">
+                <MascotMini className="flex-shrink-0" />
+                <div>
+                  <h1 className="text-lg sm:text-xl font-bold font-display text-gradient">
+                    HireMatch AI
+                  </h1>
+                  <p className="text-xs text-muted-foreground hidden sm:block">
+                    Inteligência Artificial para sua carreira
                   </p>
                 </div>
-              ))}
+              </div>
+
+              {/* Actions */}
+              {step !== "upload" && (
+                <Button
+                  onClick={resetFlow}
+                  variant="ghost"
+                  className="text-muted-foreground hover:text-primary transition-colors group"
+                >
+                  <RefreshCw className="w-4 h-4 mr-2 group-hover:rotate-180 transition-transform duration-500" />
+                  <span className="hidden sm:inline">Novo Currículo</span>
+                  <span className="sm:hidden">Novo</span>
+                </Button>
+              )}
             </div>
           </div>
-        </div>
-      </section>
+        </header>
 
-      {/* Footer */}
-      <footer className="py-8 border-t bg-card/30">
-        <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
-          <p>© 2025 Analisador de Currículos. Linkedin : https://www.linkedin.com/in/gabriel-victor-71187b223/</p>
-        </div>
-      </footer>
+        {/* Hero Section */}
+        <section className="py-8 sm:py-12 md:py-16">
+          <div className="container mx-auto px-4 sm:px-6">
+            {/* Hero Title - Only show on upload step */}
+            {step === "upload" && (
+              <div className="max-w-4xl mx-auto text-center mb-10 md:mb-14 animate-in">
+                <div className="inline-flex items-center gap-2 neural-badge mb-6">
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>Powered by AI</span>
+                </div>
+
+                <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold font-display mb-6 leading-tight">
+                  Transforme Seu{" "}
+                  <span className="text-gradient">Currículo</span>
+                  <br className="hidden sm:block" />
+                  <span className="text-gradient">Com Inteligência Artificial</span>
+                </h2>
+
+                <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+                  Nossa IA analisa seu currículo, encontra vagas compatíveis e gera
+                  feedbacks personalizados para aumentar suas chances de contratação
+                </p>
+              </div>
+            )}
+
+            {/* Progress Steps */}
+            <div className="max-w-2xl mx-auto mb-8 px-2">
+              <div className="flex items-center justify-center gap-2 sm:gap-3">
+                {steps.map((item, idx) => {
+                  const Icon = item.icon;
+                  const isActive = step === item.id;
+                  const isComplete = idx < currentStepIndex;
+
+                  return (
+                    <div key={item.id} className="flex items-center">
+                      {/* Step Circle */}
+                      <div className="flex flex-col sm:flex-row items-center gap-2">
+                        <div
+                          className={`step-indicator ${
+                            isActive
+                              ? "step-indicator-active"
+                              : isComplete
+                              ? "step-indicator-complete"
+                              : "step-indicator-pending"
+                          }`}
+                        >
+                          {isComplete ? (
+                            <CheckCircle2 className="w-5 h-5" />
+                          ) : (
+                            <Icon className="w-5 h-5" />
+                          )}
+                        </div>
+                        <span
+                          className={`text-xs sm:text-sm font-medium ${
+                            isActive
+                              ? "text-primary"
+                              : isComplete
+                              ? "text-foreground"
+                              : "text-muted-foreground"
+                          }`}
+                        >
+                          {item.label}
+                        </span>
+                      </div>
+
+                      {/* Connector */}
+                      {idx < steps.length - 1 && (
+                        <div
+                          className={`step-connector mx-2 sm:mx-4 ${
+                            idx < currentStepIndex ? "step-connector-complete" : ""
+                          }`}
+                        />
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Content */}
+            <div className="max-w-5xl mx-auto">
+              {step === "upload" && <ResumeUpload onResumeSubmit={handleResumeSubmit} />}
+
+              <div className={step === "matching" ? "" : "hidden"}>
+                <JobMatching
+                  resume={resume}
+                  resumeVersion={resumeVersion}
+                  onJobSelect={handleJobSelect}
+                  onAnalysisComplete={handleAnalysisComplete}
+                />
+              </div>
+
+              {step === "feedback" && (
+                <FeedbackDisplay
+                  jobTitle={selectedJob?.title}
+                  companyName={selectedJob?.company}
+                  companyLogo={selectedJob?.companyLogo}
+                  jobUrl={selectedJob?.url}
+                  jobScore={selectedJob?.match ?? selectedJob?.score}
+                  onAdaptResume={handleAdaptResume}
+                  onBackToMatching={handleBackToMatching}
+                  data={analysisData}
+                  isAdapting={isAdapting}
+                  isAdapted={isAdapted}
+                  key={resumeVersion}
+                />
+              )}
+            </div>
+          </div>
+        </section>
+
+        {/* Features Section - Only show on upload step */}
+        {step === "upload" && (
+          <section className="py-16 md:py-20">
+            <div className="container mx-auto px-4 sm:px-6">
+              <div className="max-w-4xl mx-auto">
+                <div className="text-center mb-12">
+                  <h3 className="text-2xl sm:text-3xl font-bold font-display mb-4">
+                    Como <span className="text-gradient">Funciona</span>
+                  </h3>
+                  <p className="text-muted-foreground">
+                    Três passos simples para otimizar sua candidatura
+                  </p>
+                </div>
+
+                <div className="grid md:grid-cols-3 gap-6 md:gap-8">
+                  {[
+                    {
+                      step: "01",
+                      title: "Envie Seu Currículo",
+                      description:
+                        "Cole o texto ou faça upload do arquivo. Nossa IA processa PDFs, DOCs e arquivos de texto.",
+                      icon: FileText,
+                    },
+                    {
+                      step: "02",
+                      title: "Compare com Vagas",
+                      description:
+                        "Algoritmos de matching encontram as vagas mais compatíveis com seu perfil em tempo real.",
+                      icon: Briefcase,
+                    },
+                    {
+                      step: "03",
+                      title: "Receba Feedback",
+                      description:
+                        "Análise detalhada de pontos fortes, melhorias e adaptação automática do currículo.",
+                      icon: BarChart3,
+                    },
+                  ].map((feature, idx) => (
+                    <div
+                      key={feature.step}
+                      className="neural-card p-6 text-center hover-lift animate-in"
+                      style={{ animationDelay: `${idx * 0.1}s` }}
+                    >
+                      <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-neural text-primary-foreground mb-5 shadow-glow">
+                        <feature.icon className="w-7 h-7" />
+                      </div>
+                      <div className="font-mono text-xs text-primary mb-2 tracking-wider">
+                        PASSO {feature.step}
+                      </div>
+                      <h4 className="font-bold text-lg font-display mb-2">{feature.title}</h4>
+                      <p className="text-sm text-muted-foreground leading-relaxed">
+                        {feature.description}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* Stats Section - Only show on upload step */}
+        {step === "upload" && (
+          <section className="py-12 border-t border-border">
+            <div className="container mx-auto px-4 sm:px-6">
+              <div className="max-w-4xl mx-auto">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+                  {[
+                    { value: "10K+", label: "Currículos Analisados" },
+                    { value: "1000+", label: "Vagas Disponíveis" },
+                    { value: "85%", label: "Taxa de Match" },
+                    { value: "Real-time", label: "Processamento" },
+                  ].map((stat, idx) => (
+                    <div
+                      key={idx}
+                      className="animate-in"
+                      style={{ animationDelay: `${idx * 0.1}s` }}
+                    >
+                      <p className="text-2xl sm:text-3xl font-bold font-mono text-gradient">
+                        {stat.value}
+                      </p>
+                      <p className="text-xs sm:text-sm text-muted-foreground mt-1">
+                        {stat.label}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* Footer */}
+        <footer className="py-8 border-t border-border glass-card mt-auto">
+          <div className="container mx-auto px-4 sm:px-6">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <MascotMini />
+                <div className="text-sm text-muted-foreground">
+                  <span className="font-semibold text-foreground">HireMatch AI</span>
+                  <span className="mx-2">·</span>
+                  <span>© 2025</span>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-4">
+                <a
+                  href="https://www.linkedin.com/in/gabriel-victor-71187b223/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-muted-foreground hover:text-primary transition-colors"
+                  aria-label="LinkedIn"
+                >
+                  <Linkedin className="w-5 h-5" />
+                </a>
+                <a
+                  href="https://github.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-muted-foreground hover:text-primary transition-colors"
+                  aria-label="GitHub"
+                >
+                  <Github className="w-5 h-5" />
+                </a>
+              </div>
+            </div>
+          </div>
+        </footer>
+      </div>
     </div>
   );
 };
